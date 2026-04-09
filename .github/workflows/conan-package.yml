@@ -1,0 +1,31 @@
+name: Conan Package CI
+
+on:
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.os }} - ${{ matrix.version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        version: ["3.2.1", "2.5.6"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Conan
+        uses: conan-io/setup-conan@v1
+
+      - name: Detect Conan profile
+        run: conan profile detect --force
+
+      - name: Create package
+        run: conan create . --version=${{ matrix.version }} --build=missing
+
+      - name: Verify package in cache
+        run: conan list "discord-game-sdk/${{ matrix.version }}"
