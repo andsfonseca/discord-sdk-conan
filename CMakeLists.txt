@@ -15,6 +15,11 @@ target_include_directories(discord PUBLIC
     $<INSTALL_INTERFACE:include/discord>
 )
 
+# Include cstdint on linux
+if(UNIX AND NOT APPLE)
+    target_compile_options(discord PRIVATE -include cstdint)
+endif()
+
 # Link with native Discord Game SDK shared library (per OS/arch)
 if(WIN32)
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
